@@ -18,8 +18,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<MovieProvider>(context, listen: false).getMovieData();
+    // Provider.of<MovieProvider>(context, listen: false).getMovieData();
+    Provider.of<MovieProvider>(context, listen: false).permission();
   }
+
+  TextEditingController txtName = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -29,15 +32,42 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Scaffold(
       appBar: AppBar(
         title: Text(
-          "Game Of Thrones",
+          "🍿 PopCorn Time",
         ),
         centerTitle: true,
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: TextFormField(
+              controller: txtName,
+              style: TextStyle(color: Colors.black),
+              cursorColor: Colors.deepPurple.shade700,
+              decoration: InputDecoration(
+                hintText: 'Search Movie..',
+                hintStyle: TextStyle(color: Colors.grey),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 2, color: Colors.grey.shade700),
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 2, color: Colors.grey),
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              movieProviderF!.changeName("${txtName.text}");
+              movieProviderF!.getMovieData("${txtName.text}");
+            },
+            child: Text("Search !!"),
+          ),
           Expanded(
             child: FutureBuilder(
-              future: movieProviderT!.getMovieData(),
+              future: movieProviderT!.getMovieData(movieProviderF!.movieName),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Text("${snapshot.error}");
@@ -62,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               SizedBox(height: 16.0),
                               Text(
-                                "${m1!.d[index].l}",
+                                "${m1.d[index].l}",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20.0,
